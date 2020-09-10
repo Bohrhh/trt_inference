@@ -6,7 +6,7 @@
 * opencv==3.4.x
 * gflags
 * yaml-cpp
-* [tensorrt_plugin](http://115.239.209.130:1111/zhilu/dl/quantization/tensorrt_plugin)
+* tensorrt_plugin
 
 ## Directory
 
