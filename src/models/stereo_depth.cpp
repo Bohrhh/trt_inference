@@ -6,7 +6,6 @@ void StereoDepth::vis(
 {
   cv::Mat disp = outputs["disp"];
   cv::Mat hsv;
-  float maxDisp = 60.0;
 
   int height = inOutDims_["disp"].d[2];
   int width  = inOutDims_["disp"].d[3];
@@ -17,7 +16,7 @@ void StereoDepth::vis(
     for (int x = 0; x < width; x ++)
     {
       int index[4] = {0,0,y,x};
-      float v = 1 - std::min(disp.at<float>(index), maxDisp) / maxDisp;
+      float v = 1 - std::min(disp.at<float>(index), maxDisp_) / maxDisp_;
       hsv.at<cv::Vec3b>(y,x) = cv::Vec3b((unsigned char)(150 * v), 255, 255);
     }
 

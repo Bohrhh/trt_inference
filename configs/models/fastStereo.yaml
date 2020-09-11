@@ -53,12 +53,16 @@ preprocess:
 #   path    -- tensorrt model path
 #   inputs  -- model's inputs
 #   outputs -- model's outputs
+#   vis:
+#     maxDisp -- max disparity for imshow, unit pixel
 # =======================================
 model:
   type: stereo
   path: data/qfastStereo.trt
   inputs:  [imgl, imgr]
   outputs: [disp]
+  vis:
+    maxDisp: 60
 
 
 

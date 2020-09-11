@@ -53,12 +53,17 @@ preprocess:
 #   path    -- tensorrt model path
 #   inputs  -- model's inputs
 #   outputs -- model's outputs
+#   vis:
+#     maxDepth -- max Depth for imshow, unit mm
 # =======================================
 model:
   type: mono
   path: data/MiDaS.trt
   inputs:  [img]
   outputs: [depth]
+  vis:
+    maxDepth: 10000
+
 
 
 

@@ -15,9 +15,14 @@ class MonoDepth: public BaseModel
 {
 public:
   MonoDepth() {}
-  MonoDepth(const YAML::Node& cfg):BaseModel(cfg){}
+  MonoDepth(const YAML::Node& cfg):BaseModel(cfg){
+    maxDepth_ = cfg["vis"]["maxDepth"].as<float>();
+  }
 
   virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs);
+
+private:
+  float maxDepth_;
 
 };
 

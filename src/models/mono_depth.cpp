@@ -6,7 +6,6 @@ void MonoDepth::vis(
 {
   cv::Mat depth = outputs["depth"];
   cv::Mat img_color;
-  float maxDepth = 20000.0;
 
   int height = inOutDims_["depth"].d[1];
   int width  = inOutDims_["depth"].d[2];
@@ -16,7 +15,7 @@ void MonoDepth::vis(
   for (int y = 0; y < height; y ++)
     for (int x = 0; x < width; x ++)
     {
-      img_color.at<uchar>(y,x) = static_cast<uchar>(std::min(depth.at<float>(0,y,x)/maxDepth*255, 255.0f));
+      img_color.at<uchar>(y,x) = static_cast<uchar>(std::min(depth.at<float>(0,y,x)/maxDepth_*255, 255.0f));
     }
 
   cv::applyColorMap(img_color, img_color, cv::COLORMAP_HOT);

@@ -15,9 +15,14 @@ class StereoDepth: public BaseModel
 {
 public:
   StereoDepth() {}
-  StereoDepth(const YAML::Node& cfg):BaseModel(cfg){}
+  StereoDepth(const YAML::Node& cfg):BaseModel(cfg){
+    maxDisp_ = cfg["vis"]["maxDisp"].as<float>();
+  }
 
   virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs);
+
+private:
+  float maxDisp_;
 
 };
 
