@@ -23,7 +23,7 @@ void MonoDepth::vis(
       img_color.at<uchar>(y,x) = static_cast<uchar>(std::min(depth.at<float>(index)/maxDepth_*255, 255.0f));
     }
 
-  cv::applyColorMap(img_color, img_color, cv::COLORMAP_HOT);
+  cv::applyColorMap(img_color, img_color, cv::COLORMAP_MAGMA);
 
   if( height!=img.rows || width!=img.cols)
     cv::resize(img_color, img_color, img.size());

@@ -62,7 +62,7 @@ model:
   inputs:  [img]
   outputs: [depth]
   vis:
-    maxDepth: 300
+    maxDepth: 250
 
 
 
