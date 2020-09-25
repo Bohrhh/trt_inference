@@ -4,7 +4,6 @@
 
 * tensorrt==7.x
 * opencv==3.4.x
-* gflags
 * yaml-cpp
 * tensorrt_plugin
 
