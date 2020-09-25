@@ -5,7 +5,6 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <chrono>
-#include <gflags/gflags.h>
 #include <unordered_map>
 
 #include "stereo_camera.h" 
@@ -16,12 +15,17 @@
 #include "mono_depth.h"
 
 
-DEFINE_string(config_file, "./configs/fastFeat.yaml", "path of config file");
-
 int main(int argc, char **argv)
 {
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
-  YAML::Node cfg = YAML::LoadFile(FLAGS_config_file.c_str());
+  if(argc!=2){
+    std::cout << "Please run command: ./inference path/to/config.yaml" << std::endl;
+    return -1;
+  }else if(std::string(argv[1])=="-h" || std::string(argv[1])=="--help"){
+    std::cout << "Please run command: ./inference path/to/config.yaml" << std::endl;
+    return -1;
+  }
+
+  YAML::Node cfg = YAML::LoadFile(argv[1]);
   
   StereoCamera camera(cfg["stereo_camera"]);
   Preprocess pre(cfg["preprocess"]);
