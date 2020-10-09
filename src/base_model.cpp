@@ -149,13 +149,13 @@ bool BaseModel::run(
     }
   }
 
-  // Memcpy from host input buffers_ device input buffers_
+  // Memcpy from host input buffers_ to device input buffers_
   buffers_->copyInputToDevice();
 
   bool status = context_->executeV2(buffers_->getDeviceBindings().data());
   if (!status) return false;
 
-  // Memcpy from device output buffers_ host output buffers_
+  // Memcpy from device output buffers_ to host output buffers_
   buffers_->copyOutputToHost();
 
   {// output
