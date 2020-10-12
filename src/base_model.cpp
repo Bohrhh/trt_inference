@@ -128,7 +128,6 @@ bool BaseModel::run(
     for(std::string n : inputTensorNames_){
       float* hostDataBuffer_ = static_cast<float*>(buffers_->getHostBuffer(n));
       cv::Mat x = inputs[n];
-      const float* data = (const float*)(x.data);
       int height        = x.rows;
       int width         = x.cols;
       int channels      = x.channels();

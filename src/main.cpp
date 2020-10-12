@@ -6,6 +6,7 @@
 #include <opencv2/imgproc.hpp>
 #include <chrono>
 #include <unordered_map>
+#include <sys/stat.h>
 
 #include "stereo_camera.h" 
 #include "preprocess.h"
@@ -14,6 +15,10 @@
 #include "feature_extraction.h"
 #include "mono_depth.h"
 
+bool exists(const std::string& path){
+  struct stat statbuf;
+  return stat(path.c_str(), &statbuf) == 0;
+}
 
 int main(int argc, char **argv)
 {
@@ -21,6 +26,10 @@ int main(int argc, char **argv)
     std::cout << "Please run command: ./inference path/to/config.yaml" << std::endl;
     return -1;
   }else if(std::string(argv[1])=="-h" || std::string(argv[1])=="--help"){
+    std::cout << "Please run command: ./inference path/to/config.yaml" << std::endl;
+    return -1;
+  }else if(!exists(argv[1])){
+    std::cout << "No such file: " << argv[1] << std::endl;
     std::cout << "Please run command: ./inference path/to/config.yaml" << std::endl;
     return -1;
   }
