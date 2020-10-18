@@ -18,6 +18,10 @@ StereoCamera::StereoCamera(const YAML::Node& cfg)
   else 
     cap_.open(video_);
   assert(cap_.isOpened() && "Open video failed!");
+  if(!cap_.isOpened()){
+    std::cerr << "Open " << video_ << " failed!\n";
+    exit(EXIT_FAILURE);
+  }
   if(to_string(id) == video_){
     cap_.set(cv::CAP_PROP_FRAME_HEIGHT, height_);
     cap_.set(cv::CAP_PROP_FRAME_WIDTH, width_);

@@ -58,7 +58,7 @@ preprocess:
 # =======================================
 model:
   type: stereo
-  path: data/qfastStereo.trt
+  path: data/fastStereo.trt
   inputs:  [imgl, imgr]
   outputs: [disp]
   vis:

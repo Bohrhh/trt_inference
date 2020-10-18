@@ -56,7 +56,7 @@ preprocess:
 # =======================================
 model:
   type: instance_seg
-  path: data/qmask_probs.trt
+  path: data/centermask.trt
   inputs:  [img]
   outputs: [num_detections, nmsed_boxes, nmsed_scores, nmsed_classes, mask_probs]
 

@@ -13,7 +13,7 @@
 #   calib_file    -- calibration file of stereo camera
 # =======================================
 stereo_camera:
-  video: data/indoor.mp4
+  video: data/outdoor_original.avi
   height: 480
   width: 1280
   fourcc: MJPG
@@ -58,7 +58,7 @@ preprocess:
 # =======================================
 model:
   type: stereo
-  path: data/qfaststereolite.trt
+  path: data/faststereolite.trt
   inputs:  [imgl, imgr]
   outputs: [disp]
   vis:

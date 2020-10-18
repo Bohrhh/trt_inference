@@ -56,7 +56,7 @@ preprocess:
 # =======================================
 model:
   type: feature_extraction
-  path: data/qfastFeat.trt
+  path: data/fastFeat.trt
   inputs:  [img]
   outputs: [scores, keypoints, descriptors]
 
