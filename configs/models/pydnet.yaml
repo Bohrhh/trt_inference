@@ -13,7 +13,7 @@
 #   calib_file    -- calibration file of stereo camera
 # =======================================
 stereo_camera:
-  video: data/outdoor_original.avi
+  video: data/indoor.mp4
   height: 480
   width: 1280
   fourcc: MJPG
@@ -54,7 +54,7 @@ preprocess:
 #   inputs  -- model's inputs
 #   outputs -- model's outputs
 #   vis:
-#     maxDepth -- max Depth for imshow, unit mm
+#     maxDepth -- max Depth for imshow, relative unit
 # =======================================
 model:
   type: mono
