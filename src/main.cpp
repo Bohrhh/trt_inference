@@ -6,6 +6,7 @@
 #include <opencv2/imgproc.hpp>
 #include <chrono>
 #include <unordered_map>
+#include <stdexcept>
 #include <sys/stat.h>
 
 #include "stereo_camera.h" 
@@ -14,6 +15,7 @@
 #include "instance_seg.h"
 #include "feature_extraction.h"
 #include "mono_depth.h"
+#include "yolov5.h"
 
 bool exists(const std::string& path){
   struct stat statbuf;
@@ -22,6 +24,9 @@ bool exists(const std::string& path){
 
 int main(int argc, char **argv)
 {
+
+  // ================================================================
+  // parsing args
   if(argc!=2){
     std::cout << "Please run command: ./inference path/to/config.yaml" << std::endl;
     return -1;
@@ -34,13 +39,13 @@ int main(int argc, char **argv)
     return -1;
   }
 
+  // ================================================================
+  // construct three main objects: camera, pre and model
   YAML::Node cfg = YAML::LoadFile(argv[1]);
-  
   StereoCamera camera(cfg["stereo_camera"]);
   Preprocess pre(cfg["preprocess"]);
   std::shared_ptr<BaseModel> pmodel;
 
-  // construct model
   std::string model_type = cfg["model"]["type"].as<std::string>();
   if(model_type=="stereo")
     pmodel = std::shared_ptr<BaseModel>(new StereoDepth(cfg["model"]));
@@ -50,10 +55,13 @@ int main(int argc, char **argv)
     pmodel = std::shared_ptr<BaseModel>(new FeatureExtraction(cfg["model"]));
   else if(model_type=="mono")
     pmodel = std::shared_ptr<BaseModel>(new MonoDepth(cfg["model"]));
+  else if(model_type=="yolov5")
+    pmodel = std::shared_ptr<BaseModel>(new YOLOV5(cfg["model"]));
   else
-    assert(false && "No such model type!");
-  
-  
+    throw std::runtime_error("No such model type!");
+
+  // ================================================================
+  // do inference
   while (true)
   {
     cv::Mat imgL;
@@ -81,7 +89,7 @@ int main(int argc, char **argv)
     auto start = std::chrono::system_clock::now();
     bool ret_model = pmodel->run(inputs, outputs);
     assert(ret_model && "Model run failed!");
-    pmodel->vis(imgL, outputs);
+    pmodel->vis(imgL, outputs, cfg["preprocess"]);
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> diff = end-start;
     std::cout << "one prediction time cost : " << diff.count()*1000 << " ms\n";

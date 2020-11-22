@@ -13,11 +13,11 @@
 #   calib_file    -- calibration file of stereo camera
 # =======================================
 stereo_camera:
-  video: data/indoor.mp4
+  video: data/outdoor_original.avi
   height: 480
   width: 1280
   fourcc: MJPG
-  remap: 1
+  remap: 0
   rectify_alpha: 0.0
   calib_file: configs/camera/stereo-1.yml
 
@@ -25,23 +25,26 @@ stereo_camera:
 # =======================================
 # image preprocess
 # Args:
-#   image_mode  -- 0 for RGB, 1 for BGR, 2 for Gray
-#   resize_mode -- 0 for Nearest, 1 for Bilinear
-#   height      -- output image height
-#   width       -- output image width
-#   norm        -- whether divide by 255 before normlization. 0 for false, 1 for true
-#   padding     -- whether scale up or scale down the height and width 
-#                  with the same ratio. 0 for false, 1 for true
-#   mean        -- means of pixels values
-#   std         -- stds of pixels values
+#   image_mode    -- 0 for RGB, 1 for BGR, 2 for Gray
+#   resize_mode   -- 0 for Nearest, 1 for Bilinear
+#   height        -- output image height
+#   width         -- output image width
+#   padding_mode  -- whether scale up or scale down the height and width with the same ratio.
+#                    0 for no padding, 1 for left top, 2 for letterbox.
+#                    padding will be donw before norm.
+#   padding_value -- the value to padding
+#   norm          -- whether divide by 255 before normlization. 0 for false, 1 for true
+#   mean          -- means of pixels values
+#   std           -- stds of pixels values
 # =======================================
 preprocess:
   image_mode: 0
   resize_mode: 1
   height: 384
   width: 640
+  padding_mode: 0
+  padding_value: 128
   norm: 1
-  padding: 0
   mean: [0.0, 0.0, 0.0]
   std:  [1.0, 1.0, 1.0]
 

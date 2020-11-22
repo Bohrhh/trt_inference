@@ -17,7 +17,7 @@ stereo_camera:
   height: 480
   width: 1280
   fourcc: MJPG
-  remap: 1
+  remap: 0
   rectify_alpha: 0.0
   calib_file: configs/camera/stereo-1.yml
 
@@ -40,13 +40,13 @@ stereo_camera:
 preprocess:
   image_mode: 0
   resize_mode: 1
-  height: 320
-  width: 512
-  padding_mode: 0
+  height: 640
+  width: 640
+  padding_mode: 2
   padding_value: 128
   norm: 1
-  mean: [0.485, 0.456, 0.406]
-  std:  [0.229, 0.224, 0.225]
+  mean: [0.0, 0.0, 0.0]
+  std:  [1.0, 1.0, 1.0]
 
 
 # =======================================
@@ -57,15 +57,14 @@ preprocess:
 #   inputs  -- model's inputs
 #   outputs -- model's outputs
 #   vis:
-#     maxDisp -- max disparity for imshow, unit pixel
+#     maxDepth -- max Depth for imshow, relative unit
 # =======================================
 model:
-  type: stereo
-  path: data/faststereolite.trt
-  inputs:  [imgl, imgr]
-  outputs: [disp]
-  vis:
-    maxDisp: 70
+  type: yolov5
+  path: data/yolov5x.trt
+  inputs:  [img]
+  outputs: [output8, output16, output32]
+
 
 
 

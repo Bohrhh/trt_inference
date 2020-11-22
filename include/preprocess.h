@@ -5,17 +5,22 @@
 #include <opencv2/opencv.hpp>
 #include <yaml-cpp/yaml.h>
 
-enum class ImageMode  {RGB, BGR, GRAY};
-enum class ResizeMode {Nearest, Bilinear, Hello};
+
+namespace imgPre{
+  enum class ImageMode  {RGB, BGR, GRAY};
+  enum class ResizeMode {Nearest, Bilinear};
+  enum class PaddingMode {NoPadding, LeftTop, LetterBox};
+}
+
 
 class Preprocess
 {
 public:
   Preprocess(const YAML::Node& cfg);
-  void set_parameters();
   void make_preprocess(const cv::Mat& src, cv::Mat& dst);
   void normalize(const cv::Mat& src, cv::Mat& dst, const float mean[], const float std[], bool norm=true); 
-  void resize(const cv::Mat& src, cv::Mat& dst, const int height, const int width, int resize_mode, bool padding=false);
+  void resize(const cv::Mat& src, cv::Mat& dst, const int height, const int width, 
+              imgPre::ResizeMode resize_mode, imgPre::PaddingMode padding, uchar padding_value=0);
 
 private:
   int image_mode_;
@@ -23,7 +28,8 @@ private:
   int height_;
   int width_;
   bool norm_;
-  bool padding_;
+  int padding_mode_;
+  uchar padding_value_ = 0;
   float mean_[3] = {0.0f, 0.0f, 0.0f};
   float std_[3]  = {1.0f, 1.0f, 1.0f};
 };

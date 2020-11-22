@@ -17,7 +17,7 @@ public:
   FeatureExtraction() {}
   FeatureExtraction(const YAML::Node& cfg):BaseModel(cfg){}
 
-  virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs);
+  virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfg_preprocess);
 
 };
 

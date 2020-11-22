@@ -2,8 +2,14 @@
 
 void InstanceSeg::vis(
   cv::Mat& img, 
-  std::unordered_map<std::string, cv::Mat>& outputs)
+  std::unordered_map<std::string, cv::Mat>& outputs,
+  const YAML::Node& cfg_preprocess)
 {
+  imgPre::PaddingMode pm = static_cast<imgPre::PaddingMode>(cfg_preprocess["padding_mode"].as<int>());
+  if (pm!=imgPre::PaddingMode::NoPadding) {
+    throw std::runtime_error("InstanceSeg model's padding mode should be NoPadding!");
+  }
+
   cv::Mat num_detections = outputs["num_detections"];
   cv::Mat nmsed_classes  = outputs["nmsed_classes"];
   cv::Mat nmsed_boxes    = outputs["nmsed_boxes"];

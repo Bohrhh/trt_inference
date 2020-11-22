@@ -3,6 +3,7 @@
 
 #include "buffers.h"
 #include "NvOnnxParser.h"
+#include "preprocess.h"
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -29,7 +30,7 @@ public:
     std::unordered_map<std::string, cv::Mat>& inputs, 
     std::unordered_map<std::string, cv::Mat>& outputs);
 
-  virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs) = 0;
+  virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfg_preprocess) = 0;
 
   std::unordered_map<std::string, nvinfer1::Dims> inOutDims_;
   std::unordered_map<std::string, nvinfer1::DataType> outputDataType_;

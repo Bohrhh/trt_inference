@@ -2,8 +2,14 @@
 
 void FeatureExtraction::vis(
   cv::Mat& img,
-  std::unordered_map<std::string, cv::Mat>& outputs)
+  std::unordered_map<std::string, cv::Mat>& outputs,
+  const YAML::Node& cfg_preprocess)
 {
+  imgPre::PaddingMode pm = static_cast<imgPre::PaddingMode>(cfg_preprocess["padding_mode"].as<int>());
+  if (pm!=imgPre::PaddingMode::NoPadding) {
+    throw std::runtime_error("FeatureExtraction model's padding mode should be NoPadding!");
+  }
+
   cv::Mat scores      = outputs["scores"];
   cv::Mat keypoints   = outputs["keypoints"];
   cv::Mat descriptors = outputs["descriptors"];
