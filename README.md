@@ -30,7 +30,7 @@
 │   │   ├── stereo_depth.cpp
 │   │   ├── yolov5.cpp
 
-说明：model文件夹下是具体的模型类别，需要继承 base_model 并且实现自己的可视化方法。
+说明：models 文件夹下是具体的模型类别，需要继承 base_model 并且实现自己的可视化方法。
 ```
 
 

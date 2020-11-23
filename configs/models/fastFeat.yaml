@@ -31,7 +31,7 @@ stereo_camera:
 #   width         -- output image width
 #   padding_mode  -- whether scale up or scale down the height and width with the same ratio.
 #                    0 for no padding, 1 for left top, 2 for letterbox.
-#                    padding will be donw before norm.
+#                    padding will be done before norm.
 #   padding_value -- the value to padding if padding mode is not 0
 #   norm          -- whether divide by 255 before normlization. 0 for false, 1 for true
 #   mean          -- means of pixels values
