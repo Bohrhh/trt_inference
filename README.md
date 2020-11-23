@@ -19,13 +19,20 @@
 ├── include/
 │
 ├── src/
-│   ├── models/
 │   ├── stereo_camera.cpp
 │   ├── preprocess.cpp
 │   ├── base_model.cpp
 │   ├── main.cpp
+│   ├── models/
+│   │   ├── feature_extraction.cpp
+│   │   ├── instance_seg.cpp
+│   │   ├── mono_depth.cpp
+│   │   ├── stereo_depth.cpp
+│   │   ├── yolov5.cpp
 
+说明：model文件夹下是具体的模型类别，需要继承 base_model 并且实现自己的可视化方法。
 ```
+
 
 ## Usage
 

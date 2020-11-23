@@ -61,7 +61,7 @@ preprocess:
 # =======================================
 model:
   type: yolov5
-  path: data/yolov5x.trt
+  path: data/yolov5s.trt
   inputs:  [img]
   outputs: [output8, output16, output32]
 
