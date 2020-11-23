@@ -56,15 +56,13 @@ preprocess:
 #   path    -- tensorrt model path
 #   inputs  -- model's inputs
 #   outputs -- model's outputs
-#   vis:
-#     maxDepth -- max Depth for imshow, relative unit
+#   conf_thresh -- confidence threshold
+#   nms_thresh -- nms IOU threshold 
 # =======================================
 model:
   type: yolov5
   path: data/yolov5s.trt
   inputs:  [img]
   outputs: [output8, output16, output32]
-
-
-
-
+  conf_thresh: 0.25
+  nms_thresh: 0.6

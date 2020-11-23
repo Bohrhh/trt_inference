@@ -23,7 +23,10 @@ class YOLOV5: public BaseModel
 {
 public:
   YOLOV5() {}
-  YOLOV5(const YAML::Node& cfg):BaseModel(cfg){}
+  YOLOV5(const YAML::Node& cfg):BaseModel(cfg){
+    conf_thresh_ = cfg["conf_thresh"].as<float>();
+    nms_thresh_ = cfg["nms_thresh"].as<float>();
+  }
 
   virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfg_preprocess);
   float inference_output(cv::Mat& x, float* &start, float conf_thresh, int anchors, int h, int w, int classes, float stride, int det);

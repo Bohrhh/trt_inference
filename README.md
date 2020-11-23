@@ -45,3 +45,6 @@ cd ..
 build/inference --config-file=configs/fastFeat.yaml
 # settings of camera and model are in yaml file
 ```
+
+
+http://115.239.209.130:1111/zhilu/perception/trt_inference
