@@ -38,32 +38,6 @@ void Preprocess::make_preprocess(const cv::Mat& _src, cv::Mat& _dst) {
 
 }
 
-void Preprocess::normalize(const cv::Mat& _src, cv::Mat& _dst, 
-                           const float mean[], const float std[], bool norm) {
-  cv::Mat src = _src;
-  int height = src.rows;
-  int width = src.cols;
-  int channels = src.channels();
-  float scale = norm ? 255.0f:1.0f;
-
-  assert (channels==1 || channels==3);
-  if(channels == 1)
-    _dst.create(src.size(), CV_32FC1);
-  else if(channels == 3)
-    _dst.create(src.size(), CV_32FC3);
-
-  for(int i=0; i<height; ++i)
-    for(int j=0; j<width; ++j){
-      if(channels==1){
-        _dst.at<float>(i, j) = (static_cast<float>(src.at<uchar>(i, j))/scale - mean[0])/std[0];
-      }  
-      else{
-        _dst.at<cv::Vec3f>(i, j)[0] = (static_cast<float>(src.at<cv::Vec3b>(i, j)[0])/scale - mean[0])/std[0];
-        _dst.at<cv::Vec3f>(i, j)[1] = (static_cast<float>(src.at<cv::Vec3b>(i, j)[1])/scale - mean[1])/std[1];
-        _dst.at<cv::Vec3f>(i, j)[2] = (static_cast<float>(src.at<cv::Vec3b>(i, j)[2])/scale - mean[2])/std[2];
-      }
-    }
-}
 
 void Preprocess::resize(const cv::Mat& _src, cv::Mat& _dst, 
                         const int height, const int width, 
@@ -103,4 +77,31 @@ void Preprocess::resize(const cv::Mat& _src, cv::Mat& _dst,
   }else {
     _dst = dst;
   }
+}
+
+void Preprocess::normalize(const cv::Mat& _src, cv::Mat& _dst, 
+                           const float mean[], const float std[], bool norm) {
+  cv::Mat src = _src;
+  int height = src.rows;
+  int width = src.cols;
+  int channels = src.channels();
+  float scale = norm ? 255.0f:1.0f;
+
+  assert (channels==1 || channels==3);
+  if(channels == 1)
+    _dst.create(src.size(), CV_32FC1);
+  else if(channels == 3)
+    _dst.create(src.size(), CV_32FC3);
+
+  for(int i=0; i<height; ++i)
+    for(int j=0; j<width; ++j){
+      if(channels==1){
+        _dst.at<float>(i, j) = (static_cast<float>(src.at<uchar>(i, j))/scale - mean[0])/std[0];
+      }  
+      else{
+        _dst.at<cv::Vec3f>(i, j)[0] = (static_cast<float>(src.at<cv::Vec3b>(i, j)[0])/scale - mean[0])/std[0];
+        _dst.at<cv::Vec3f>(i, j)[1] = (static_cast<float>(src.at<cv::Vec3b>(i, j)[1])/scale - mean[1])/std[1];
+        _dst.at<cv::Vec3f>(i, j)[2] = (static_cast<float>(src.at<cv::Vec3b>(i, j)[2])/scale - mean[2])/std[2];
+      }
+    }
 }
