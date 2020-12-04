@@ -12,6 +12,7 @@ public:
   void load(const std::string& filename);
   bool read(cv::Mat& imgL, cv::Mat& imgR);
   bool read(cv::Mat& dst, bool isLeft=true);
+  
 
 private:
   int height_, width_;
