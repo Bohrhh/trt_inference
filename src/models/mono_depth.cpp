@@ -34,6 +34,6 @@ void MonoDepth::vis(
   if( height!=img.rows || width!=img.cols)
     cv::resize(img_color, img_color, img.size());
 
-  cv::hconcat(img, img_color, img);
+  cv::vconcat(img, img_color, img);
 
 }

@@ -12,7 +12,8 @@ public:
   void load(const std::string& filename);
   bool read(cv::Mat& imgL, cv::Mat& imgR);
   bool read(cv::Mat& dst, bool isLeft=true);
-  
+  void write(cv::Mat& img);
+  void release();
 
 private:
   int height_, width_;
@@ -26,8 +27,10 @@ private:
 
   std::string video_;
   cv::VideoCapture cap_;
+  cv::VideoWriter wri_;
 
   bool remap_;
+  bool save_;
   
 };
 

@@ -6,9 +6,9 @@ using std::to_string;
 
 StereoCamera::StereoCamera(const YAML::Node& cfg)
 { 
-  height_ = cfg["height"].as<int>();
-  width_  = cfg["width"].as<int>();
-  rectify_alpha_  = cfg["rectify_alpha"].as<float>();
+  height_ = cfg["video_paras"]["height"].as<int>();
+  width_  = cfg["video_paras"]["width"].as<int>();
+  rectify_alpha_  = cfg["remap_paras"]["rectify_alpha"].as<float>();
 
   // video 
   video_ = cfg["video"].as<std::string>();
@@ -25,15 +25,33 @@ StereoCamera::StereoCamera(const YAML::Node& cfg)
   if(to_string(id) == video_){
     cap_.set(cv::CAP_PROP_FRAME_HEIGHT, height_);
     cap_.set(cv::CAP_PROP_FRAME_WIDTH, width_);
-    const char* fourcc = cfg["fourcc"].as<std::string>().c_str();
+    const char* fourcc = cfg["video_paras"]["fourcc"].as<std::string>().c_str();
     cap_.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc(fourcc[0], fourcc[1], fourcc[2], fourcc[3]));
+  }
+  else{
+    height_ = cap_.get(cv::CAP_PROP_FRAME_HEIGHT);
+    width_  = cap_.get(cv::CAP_PROP_FRAME_WIDTH);
   }
 
   // remap or not
   remap_ = static_cast<bool>(cfg["remap"].as<int>());
   if(remap_){
-    std::string calib_file = cfg["calib_file"].as<std::string>();
+    std::string calib_file = cfg["remap_paras"]["calib_file"].as<std::string>();
     load(calib_file);
+  }
+
+  // save video or not
+  save_ = static_cast<bool>(cfg["save"].as<int>());
+  if (save_){
+    std::string name  = cfg["save_paras"]["name"].as<std::string>();
+    int height  = cfg["save_paras"]["height"].as<int>();
+    int width   = cfg["save_paras"]["width"].as<int>();
+    double freq = cfg["save_paras"]["freq"].as<double>();
+    wri_.open(
+      name,
+      cv::VideoWriter::fourcc('m', 'p', '4', 'v'),
+      freq,
+      cv::Size(width, height));
   }
 
 }
@@ -104,4 +122,15 @@ bool StereoCamera::read(cv::Mat& dst, bool isLeft)
       cv::remap(dst, dst, mapxR_, mapyR_, cv::INTER_LINEAR);
     return true;
   }
+}
+
+void StereoCamera::write(cv::Mat& img)
+{
+  wri_.write(img);
+}
+
+void StereoCamera::release()
+{
+  cap_.release();
+  wri_.release();
 }

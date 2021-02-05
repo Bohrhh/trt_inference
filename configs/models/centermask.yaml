@@ -1,25 +1,40 @@
 # =======================================
 # stereo_camera
 # Args:
-#   video         -- the id for camera device or name for video path.
-#                    if it is an id, height, width and fourcc should be provided
-#   height        -- video height
-#   width         -- video width
-#   fourcc        -- MJPG 
-#   remap         -- 0 for false, 1 for true. 
-#                    if 1 rectify_alpha and calib_file should be provided
-#   rectify_alpha -- 0.0 means no black areas after rectification, 
-#                    1.0 means no source image pixels are lost
-#   calib_file    -- calibration file of stereo camera
+#   video           -- the id for camera device or name for video path.
+#                      if it is an id, video_paras should be provided
+#   video_paras
+#     height        -- video height
+#     width         -- video width
+#     fourcc        -- MJPG 
+#   remap           -- 0 for false, 1 for true. if 1, remap_paras should be provided
+#   remap_paras
+#     rectify_alpha -- 0.0 means no black areas after rectification, 
+#                      1.0 means no source image pixels are lost
+#     calib_file    -- calibration file of stereo camera
+#   save            -- whether to save video, if 1, save_paras should be provided
+#   save_paras
+#     name          -- video name
+#     height        -- video height
+#     width         -- video width
+#     freq          -- video frequency 
 # =======================================
 stereo_camera:
   video: data/outdoor_original.avi
-  height: 480
-  width: 1280
-  fourcc: MJPG
-  remap: 1
-  rectify_alpha: 0.0
-  calib_file: configs/camera/stereo-1.yml
+  video_paras:
+    height: 320
+    width: 1024
+    fourcc: MJPG
+  remap: 0
+  remap_paras:
+    rectify_alpha: 0.0
+    calib_file: configs/camera/stereo-1.yml
+  save: 1
+  save_paras:
+    name: test.mp4
+    height: 480
+    width: 640
+    freq: 30.0
 
 
 # =======================================

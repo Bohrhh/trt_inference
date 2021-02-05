@@ -56,5 +56,5 @@ void StereoDepth::vis(
   if( height!=img.rows || width!=img.cols)
     cv::resize(disp_vis, disp_vis, img.size());
   
-  cv::hconcat(img, disp_vis, img);
+  cv::vconcat(img, disp_vis, img);
 }

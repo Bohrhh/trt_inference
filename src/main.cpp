@@ -46,9 +46,7 @@ int main(int argc, char **argv)
   Preprocess pre(cfg["preprocess"]);
   std::shared_ptr<BaseModel> pmodel;
 
-  // int myFourCC = cv::VideoWriter::fourcc('m', 'p', '4', 'v');//mp4
-  // cv::VideoWriter writer("./yolov5.mp4", myFourCC, 30.0, cv::Size(640,480), true);
-
+  bool save_video = static_cast<bool>(cfg["stereo_camera"]["save"].as<int>());
   std::string model_type = cfg["model"]["type"].as<std::string>();
   if(model_type=="stereo")
     pmodel = std::shared_ptr<BaseModel>(new StereoDepth(cfg["model"]));
@@ -96,9 +94,9 @@ int main(int argc, char **argv)
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> diff = end-start;
     std::cout << "one prediction time cost : " << diff.count()*1000 << " ms\n";
-    // writer << imgL;
     cv::imshow("vis", imgL);
-
+    if (save_video)
+      camera.write(imgL);
 
     int key = cv::waitKey(1);
     if(key == 'q' || key == 27 /* ESC */)
