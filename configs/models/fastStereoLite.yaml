@@ -20,7 +20,7 @@
 #     freq          -- video frequency 
 # =======================================
 stereo_camera:
-  video: data/outdoor_original.avi
+  video: data/indoor.mp4
   video_paras:
     height: 320
     width: 1024
@@ -80,7 +80,7 @@ model:
   inputs:  [imgl, imgr]
   outputs: [disp]
   vis:
-    maxDisp: 40
+    maxDisp: 80
 
 
 

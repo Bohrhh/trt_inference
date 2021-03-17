@@ -81,6 +81,7 @@ void StereoCamera::load(const std::string& filename)
   cv::initUndistortRectifyMap(
     cameraMatrixR_, distCoeffsR_, R2_, P2_,
     sz, CV_32FC1, mapxR_, mapyR_);
+  fs.release();
 }
 
 bool StereoCamera::read(cv::Mat& imgL, cv::Mat& imgR)
