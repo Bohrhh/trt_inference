@@ -28,14 +28,14 @@ int main(int argc, char **argv)
   // ================================================================
   // parsing args
   if(argc!=2){
-    std::cout << "Please run command: ./inference path/to/config.yaml" << std::endl;
+    std::cout << "Please run command: ./build/inference path/to/config.yaml" << std::endl;
     return -1;
   }else if(std::string(argv[1])=="-h" || std::string(argv[1])=="--help"){
-    std::cout << "Please run command: ./inference path/to/config.yaml" << std::endl;
+    std::cout << "Please run command: ./build/inference path/to/config.yaml" << std::endl;
     return -1;
   }else if(!exists(argv[1])){
     std::cout << "No such file: " << argv[1] << std::endl;
-    std::cout << "Please run command: ./inference path/to/config.yaml" << std::endl;
+    std::cout << "Please run command: ./build/inference path/to/config.yaml" << std::endl;
     return -1;
   }
 
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
       break;
   }
 
-  // writer.release();
+  camera.release();
   cv::destroyAllWindows();
 
 

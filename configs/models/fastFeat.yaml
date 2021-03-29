@@ -77,6 +77,3 @@ model:
   path: data/fastFeat.trt
   inputs:  [img]
   outputs: [scores, keypoints, descriptors]
-
-
-

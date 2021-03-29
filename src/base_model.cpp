@@ -126,23 +126,21 @@ bool BaseModel::run(
   
   {// input
     for(std::string n : inputTensorNames_){
-      float* hostDataBuffer_ = static_cast<float*>(buffers_->getHostBuffer(n));
+      float* hostDataBuffer = static_cast<float*>(buffers_->getHostBuffer(n));
       cv::Mat x = inputs[n];
       int height        = x.rows;
       int width         = x.cols;
       int channels      = x.channels();
       assert(channels==1 || channels==3);
       if(channels==1){
-        for(int i=0; i<height; ++i)
-          for(int j=0; j<width; ++j)
-            hostDataBuffer_[i*width+j] = x.at<float>(i,j);
+        memcpy(hostDataBuffer, x.data, height*width*sizeof(float));
       }
       else if(channels==3){
         for(int i=0; i<height; ++i)
           for(int j=0; j<width; ++j){
-            hostDataBuffer_[i*width+j]                = x.at<cv::Vec3f>(i,j)[0];
-            hostDataBuffer_[width*height+i*width+j]   = x.at<cv::Vec3f>(i,j)[1];
-            hostDataBuffer_[2*width*height+i*width+j] = x.at<cv::Vec3f>(i,j)[2];
+            hostDataBuffer[i*width+j]                = x.at<cv::Vec3f>(i,j)[0];
+            hostDataBuffer[width*height+i*width+j]   = x.at<cv::Vec3f>(i,j)[1];
+            hostDataBuffer[2*width*height+i*width+j] = x.at<cv::Vec3f>(i,j)[2];
           }
       }
     }
@@ -164,18 +162,14 @@ bool BaseModel::run(
       if(outputDataType_[n] == nvinfer1::DataType::kFLOAT){
         y.create(dims.nbDims, dims.d, CV_32F);
         const float* src = static_cast<float*>(buffers_->getHostBuffer(n));
-        float* data      = (float*)(y.data);
         int num          = count(dims); 
-        for(int j=0; j<num; ++j)
-          data[j] = src[j];
+        memcpy(y.data, src, num*sizeof(float));
       }
       else if(outputDataType_[n] == nvinfer1::DataType::kINT32){
         y.create(dims.nbDims, dims.d, CV_32S);
         const int32_t* src = static_cast<int32_t*>(buffers_->getHostBuffer(n));
-        int32_t* data      = (int32_t*)(y.data);
         int num            = count(dims); 
-        for(int j=0; j<num; ++j)
-          data[j] = src[j];
+        memcpy(y.data, src, num*sizeof(int32_t));
       }
       outputs[n] = y;
    }

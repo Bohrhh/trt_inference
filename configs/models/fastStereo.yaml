@@ -81,6 +81,3 @@ model:
   outputs: [disp]
   vis:
     maxDisp: 60
-
-
-
