@@ -28,14 +28,14 @@ int main(int argc, char **argv)
   // ================================================================
   // parsing args
   if(argc!=2){
-    std::cout << "Please run command: ./build/inference path/to/config.yaml" << std::endl;
+    std::cerr << "Please run command: ./build/inference path/to/config.yaml" << std::endl;
     return -1;
   }else if(std::string(argv[1])=="-h" || std::string(argv[1])=="--help"){
-    std::cout << "Please run command: ./build/inference path/to/config.yaml" << std::endl;
+    std::cerr << "Please run command: ./build/inference path/to/config.yaml" << std::endl;
     return -1;
   }else if(!exists(argv[1])){
-    std::cout << "No such file: " << argv[1] << std::endl;
-    std::cout << "Please run command: ./build/inference path/to/config.yaml" << std::endl;
+    std::cerr << "No such file: " << argv[1] << std::endl;
+    std::cerr << "Please run command: ./build/inference path/to/config.yaml" << std::endl;
     return -1;
   }
 
@@ -89,6 +89,10 @@ int main(int argc, char **argv)
 
     auto start = std::chrono::system_clock::now();
     bool ret_model = pmodel->run(inputs, outputs);
+    if (!ret_model){
+      std::cerr << "Model run failed!" << std::endl;
+      return -1;
+    }
     assert(ret_model && "Model run failed!");
     pmodel->vis(imgL, outputs, cfg["preprocess"]);
     auto end = std::chrono::system_clock::now();

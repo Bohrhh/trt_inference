@@ -11,24 +11,44 @@ int count(const nvinfer1::Dims& dim)
   return sum;
 }
 
+
+int count(const cv::MatSize& size)
+{
+  int ndims = size.dims();
+  int sum = 1;
+  for(int i=0; i<ndims; ++i)
+    sum *= size[i];
+  return sum;
+}
+
+
 BaseModel::BaseModel(const YAML::Node& cfg)
 {
   std::string modelFilename = cfg["path"].as<std::string>();
   std::vector<std::string> inputTensorNames;
   std::vector<std::string> outputTensorNames;
 
-  assert(cfg["inputs"].IsSequence());
+  if (!cfg["inputs"].IsSequence()){
+    std::cerr << "Cfg Inputs should be sequence!" << std::endl;
+    exit(1);
+  }
   for (std::size_t i=0; i<cfg["inputs"].size(); ++i) {
     inputTensorNames.emplace_back(cfg["inputs"][i].as<std::string>());
   }
 
-  assert(cfg["outputs"].IsSequence());
+  if (!cfg["outputs"].IsSequence()){
+    std::cerr << "Cfg outputs should be sequence!" << std::endl;
+    exit(1);
+  }
   for (std::size_t i=0; i<cfg["outputs"].size(); ++i) {
     outputTensorNames.emplace_back(cfg["outputs"][i].as<std::string>());
   }
 
   bool ret = open(modelFilename, inputTensorNames, outputTensorNames);
-  assert(ret && "Model constructs failed!");
+  if (!ret) {
+    std::cerr << "Model constructs failed!" << std::endl;
+    exit(1);
+  }
 }
 
 
@@ -51,7 +71,7 @@ bool BaseModel::open(
   }
 
   auto network = SampleUniquePtr<nvinfer1::INetworkDefinition>(
-      builder->createNetwork());
+      builder->createNetworkV2(1U << static_cast<uint32_t>(NetworkDefinitionCreationFlag::kEXPLICIT_BATCH)));
   if (!network)
   {
     std::cout << "Failed to createNetwork" << std::endl;
@@ -93,56 +113,81 @@ bool BaseModel::open(
   }
 
   engine_ = SampleUniquePtr<nvinfer1::ICudaEngine>(
-      runtime->deserializeCudaEngine(data.data(), size, nullptr),
-      samplesCommon::InferDeleter());
+      runtime->deserializeCudaEngine(data.data(), size, nullptr));
   if (!engine_)
   {
     std::cout << "Failed to deserializeCudaEngine" << std::endl;
     return false;
   }
 
-  buffers_ = std::unique_ptr<samplesCommon::BufferManager>(new samplesCommon::BufferManager(engine_));
-  context_ = SampleUniquePtr<nvinfer1::IExecutionContext>(engine_->createExecutionContext());
+  context_ = engine_->createExecutionContext();
+  context_->setOptimizationProfile(0);
 
   for(std::string n : inputTensorNames_){
     int id = engine_->getBindingIndex(n.c_str());
-    inOutDims_[n] = engine_->getBindingDimensions(id);
+    nvinfer1::Dims dims = engine_->getProfileDimensions(id, 0, nvinfer1::OptProfileSelector::kOPT);
+    inOutDims_[n] = dims;
+    context_->setBindingDimensions(id, dims);
   }
     
   for(std::string n : outputTensorNames_){
     int id = engine_->getBindingIndex(n.c_str());
-    inOutDims_[n] = engine_->getBindingDimensions(id);
+    inOutDims_[n] = context_->getBindingDimensions(id);
     outputDataType_[n] = engine_->getBindingDataType(id);
   }
 
+  buffers_ = new samplesCommon::BufferManager(engine_, 0, context_);
+
   return engine_.get();
 }
+
+
+void BaseModel::checkInputsDims(std::unordered_map<std::string, cv::Mat>& inputs)
+{
+  bool changed = false;
+  for(std::string n : inputTensorNames_){
+    cv::Mat x = inputs[n];
+    cv::MatSize currentInputSize = x.size;
+    nvinfer1::Dims oldInputDims = inOutDims_[n];
+    int nbDims = oldInputDims.nbDims;
+    for(int i=0; i<nbDims; i++){
+      if(oldInputDims.d[i]!=currentInputSize[i]){
+        changed = true;
+        // change inOutDims_
+        nvinfer1::Dims currentInputDims;
+        currentInputDims.nbDims = nbDims;
+        for(int i=0; i<nbDims; i++)
+          currentInputDims.d[i] = currentInputSize[i];
+        inOutDims_[n] = currentInputDims;
+        break;
+      }
+    }
+  }
+
+  if(!changed)
+    return ;
+
+  for(std::string n : inputTensorNames_){
+    int id = engine_->getBindingIndex(n.c_str());
+    context_->setBindingDimensions(id, inOutDims_[n]);
+  }
+
+  delete buffers_;
+  buffers_ = new samplesCommon::BufferManager(engine_, 0, context_);
+}
+
 
 bool BaseModel::run(
   std::unordered_map<std::string, cv::Mat>& inputs, 
   std::unordered_map<std::string, cv::Mat>& outputs)
 {
-  if (!context_) return false;
+  checkInputsDims(inputs);
   
   {// input
     for(std::string n : inputTensorNames_){
       float* hostDataBuffer = static_cast<float*>(buffers_->getHostBuffer(n));
       cv::Mat x = inputs[n];
-      int height        = x.rows;
-      int width         = x.cols;
-      int channels      = x.channels();
-      assert(channels==1 || channels==3);
-      if(channels==1){
-        memcpy(hostDataBuffer, x.data, height*width*sizeof(float));
-      }
-      else if(channels==3){
-        for(int i=0; i<height; ++i)
-          for(int j=0; j<width; ++j){
-            hostDataBuffer[i*width+j]                = x.at<cv::Vec3f>(i,j)[0];
-            hostDataBuffer[width*height+i*width+j]   = x.at<cv::Vec3f>(i,j)[1];
-            hostDataBuffer[2*width*height+i*width+j] = x.at<cv::Vec3f>(i,j)[2];
-          }
-      }
+      memcpy(hostDataBuffer, x.data, count(x.size)*sizeof(float));
     }
   }
 

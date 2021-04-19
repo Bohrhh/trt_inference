@@ -584,11 +584,11 @@ inline void enableDLA(IBuilder* builder, IBuilderConfig* config, int useDLACore,
         {
             config->setFlag(BuilderFlag::kGPU_FALLBACK);
         }
-        if (!builder->getInt8Mode() && !config->getFlag(BuilderFlag::kINT8))
+        if (!config->getFlag(BuilderFlag::kINT8))
         {
             // User has not requested INT8 Mode.
             // By default run in FP16 mode. FP32 mode is not permitted.
-            builder->setFp16Mode(true);
+            // builder->setFp16Mode(true);
             config->setFlag(BuilderFlag::kFP16);
         }
         config->setDefaultDeviceType(DeviceType::kDLA);

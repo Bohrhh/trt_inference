@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #ifndef TENSORRT_BUFFERS_H
 #define TENSORRT_BUFFERS_H
 
@@ -198,8 +199,7 @@ class HostAllocator
 public:
     bool operator()(void** ptr, size_t size) const
     {
-        // *ptr = malloc(size);
-        cudaHostAlloc(ptr, size, cudaHostAllocDefault);
+        *ptr = malloc(size);
         return *ptr != nullptr;
     }
 };
@@ -209,8 +209,7 @@ class HostFree
 public:
     void operator()(void* ptr) const
     {
-        // free(ptr);
-        cudaFreeHost(ptr);
+        free(ptr);
     }
 };
 

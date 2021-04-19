@@ -25,7 +25,9 @@ public:
 
   bool isOpened() const { return engine_.get(); }
   void release() { engine_ = nullptr; }
-
+  
+  void checkInputsDims(
+    std::unordered_map<std::string, cv::Mat>& inputs);
   bool run(
     std::unordered_map<std::string, cv::Mat>& inputs, 
     std::unordered_map<std::string, cv::Mat>& outputs);
@@ -41,9 +43,8 @@ private:
   std::vector<std::string> outputTensorNames_;
 
   std::shared_ptr<nvinfer1::ICudaEngine> engine_;
-  std::unique_ptr<samplesCommon::BufferManager> buffers_;
-  SampleUniquePtr<nvinfer1::IExecutionContext> context_;
-
+  nvinfer1::IExecutionContext* context_;
+  samplesCommon::BufferManager* buffers_;
 };
 
 

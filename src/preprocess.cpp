@@ -1,5 +1,6 @@
 #include "preprocess.h"
 
+
 Preprocess::Preprocess(const YAML::Node& cfg){
   image_mode_    = cfg["image_mode"].as<int>();
   resize_mode_   = cfg["resize_mode"].as<int>();
@@ -18,6 +19,7 @@ Preprocess::Preprocess(const YAML::Node& cfg){
   }
 }
 
+
 void Preprocess::make_preprocess(const cv::Mat& _src, cv::Mat& _dst) {
   cv::Mat src;
 
@@ -35,7 +37,6 @@ void Preprocess::make_preprocess(const cv::Mat& _src, cv::Mat& _dst) {
 
   // normalize
   normalize(_dst, _dst, mean_, std_, norm_);
-
 }
 
 
@@ -79,6 +80,7 @@ void Preprocess::resize(const cv::Mat& _src, cv::Mat& _dst,
   }
 }
 
+
 void Preprocess::normalize(const cv::Mat& _src, cv::Mat& _dst, 
                            const float mean[], const float std[], bool norm) {
   cv::Mat src = _src;
@@ -87,21 +89,25 @@ void Preprocess::normalize(const cv::Mat& _src, cv::Mat& _dst,
   int channels = src.channels();
   float scale = norm ? 255.0f:1.0f;
 
-  assert (channels==1 || channels==3);
-  if(channels == 1)
-    _dst.create(src.size(), CV_32FC1);
-  else if(channels == 3)
-    _dst.create(src.size(), CV_32FC3);
+  if(channels!=1 && channels!=3){
+    std::cerr << "Invalid input channels" << std::endl;
+    exit(1);
+  }
+  int size[4] = {1,channels,height,width};
+  _dst.create(4, size, CV_32F);
+  float* data = (float *)_dst.data;
 
   for(int i=0; i<height; ++i)
     for(int j=0; j<width; ++j){
       if(channels==1){
-        _dst.at<float>(i, j) = (static_cast<float>(src.at<uchar>(i, j))/scale - mean[0])/std[0];
+        int offset = i*width+j;
+        *(data+offset) = (static_cast<float>(src.at<uchar>(i, j))/scale - mean[0])/std[0];
       }  
       else{
-        _dst.at<cv::Vec3f>(i, j)[0] = (static_cast<float>(src.at<cv::Vec3b>(i, j)[0])/scale - mean[0])/std[0];
-        _dst.at<cv::Vec3f>(i, j)[1] = (static_cast<float>(src.at<cv::Vec3b>(i, j)[1])/scale - mean[1])/std[1];
-        _dst.at<cv::Vec3f>(i, j)[2] = (static_cast<float>(src.at<cv::Vec3b>(i, j)[2])/scale - mean[2])/std[2];
+        int offset = i*width+j;
+        *(data+offset)                = (static_cast<float>(src.at<cv::Vec3b>(i, j)[0])/scale - mean[0])/std[0];
+        *(data+offset+height*width)   = (static_cast<float>(src.at<cv::Vec3b>(i, j)[1])/scale - mean[1])/std[1];
+        *(data+offset+2*height*width) = (static_cast<float>(src.at<cv::Vec3b>(i, j)[2])/scale - mean[2])/std[2];
       }
     }
 }
