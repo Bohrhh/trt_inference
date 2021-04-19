@@ -46,7 +46,7 @@ bool BaseModel::open(
       nvinfer1::createInferBuilder(sample::gLogger.getTRTLogger()));
   if (!builder)
   {
-    std::cout << "Fail to createInferBuilder" << std::endl;
+    std::cout << "Failed to createInferBuilder" << std::endl;
     return false;
   }
 
@@ -54,7 +54,7 @@ bool BaseModel::open(
       builder->createNetwork());
   if (!network)
   {
-    std::cout << "Fail to createNetwork" << std::endl;
+    std::cout << "Failed to createNetwork" << std::endl;
     return false;
   }
 
@@ -62,7 +62,7 @@ bool BaseModel::open(
       nvonnxparser::createParser(*network, sample::gLogger.getTRTLogger()));
   if (!parser)
   {
-    std::cout << "Fail to createParser" << std::endl;
+    std::cout << "Failed to createParser" << std::endl;
     return false;
   }
 
@@ -70,14 +70,14 @@ bool BaseModel::open(
       nvinfer1::createInferRuntime(sample::gLogger.getTRTLogger()));
   if (!runtime)
   {
-    std::cout << "Fail to createInferRuntime" << std::endl;
+    std::cout << "Failed to createInferRuntime" << std::endl;
     return false;
   }
 
   std::ifstream ifs(filename_, std::ios::binary);
   if (!ifs)
   {
-    std::cout << "Error opening engine file: " << filename_ << std::endl;
+    std::cout << "Failed to open engine file: " << filename_ << std::endl;
     return false;
   }
 
@@ -88,16 +88,16 @@ bool BaseModel::open(
   std::vector<char> data(size);
   if (!ifs.read(data.data(), size))
   {
-    std::cout << "Error loading engine file: " << filename_ << std::endl;
+    std::cout << "Failed to load engine file: " << filename_ << std::endl;
     return false;
   }
 
-  engine_ = std::shared_ptr<nvinfer1::ICudaEngine>(
+  engine_ = SampleUniquePtr<nvinfer1::ICudaEngine>(
       runtime->deserializeCudaEngine(data.data(), size, nullptr),
       samplesCommon::InferDeleter());
   if (!engine_)
   {
-    std::cout << "Fail to deserializeCudaEngine" << std::endl;
+    std::cout << "Failed to deserializeCudaEngine" << std::endl;
     return false;
   }
 
