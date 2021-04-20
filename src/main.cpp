@@ -42,17 +42,17 @@ int main(int argc, char **argv)
   // ================================================================
   // construct three main objects: camera, pre and model
   YAML::Node cfg = YAML::LoadFile(argv[1]);
-  StereoCamera camera(cfg["stereo_camera"]);
+  StereoCamera camera(cfg["stereoCamera"]);
   Preprocess pre(cfg["preprocess"]);
   std::shared_ptr<BaseModel> pmodel;
 
-  bool save_video = static_cast<bool>(cfg["stereo_camera"]["save"].as<int>());
+  bool save_video = static_cast<bool>(cfg["stereoCamera"]["save"].as<int>());
   std::string model_type = cfg["model"]["type"].as<std::string>();
   if(model_type=="stereo")
     pmodel = std::shared_ptr<BaseModel>(new StereoDepth(cfg["model"]));
-  else if(model_type=="instance_seg")
+  else if(model_type=="instanceSeg")
     pmodel = std::shared_ptr<BaseModel>(new InstanceSeg(cfg["model"]));
-  else if(model_type=="feature_extraction")
+  else if(model_type=="featureExtraction")
     pmodel = std::shared_ptr<BaseModel>(new FeatureExtraction(cfg["model"]));
   else if(model_type=="mono")
     pmodel = std::shared_ptr<BaseModel>(new MonoDepth(cfg["model"]));
@@ -77,13 +77,13 @@ int main(int argc, char **argv)
       break;
 
     if(model_type=="stereo"){
-      pre.make_preprocess(imgL, x1);
+      pre.makePreprocess(imgL, x1);
       inputs["imgl"] = x1;
-      pre.make_preprocess(imgR, x2);
+      pre.makePreprocess(imgR, x2);
       inputs["imgr"] = x2;
     }
     else{
-      pre.make_preprocess(imgL, x1);
+      pre.makePreprocess(imgL, x1);
       inputs["img"] = x1;
     }
 
@@ -93,7 +93,6 @@ int main(int argc, char **argv)
       std::cerr << "Model run failed!" << std::endl;
       return -1;
     }
-    assert(ret_model && "Model run failed!");
     pmodel->vis(imgL, outputs, cfg["preprocess"]);
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> diff = end-start;

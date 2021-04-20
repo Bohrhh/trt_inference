@@ -24,12 +24,12 @@ class YOLOV5: public BaseModel
 public:
   YOLOV5() {}
   YOLOV5(const YAML::Node& cfg):BaseModel(cfg){
-    conf_thresh_ = cfg["conf_thresh"].as<float>();
-    nms_thresh_ = cfg["nms_thresh"].as<float>();
+    confThld_ = cfg["confThld"].as<float>();
+    nmsThld_ = cfg["nmsThld"].as<float>();
   }
 
   virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfg_preprocess);
-  float inference_output(cv::Mat& x, float* &start, float conf_thresh, int anchors, int h, int w, int classes, float stride, int det);
+  float inference_output(cv::Mat& x, float* &start, float confThld, int anchors, int h, int w, int classes, float stride, int det);
 
 private:
   float anchor_grids_[3][6] = {
@@ -38,8 +38,8 @@ private:
     {116,90, 156,198, 373,326}
   };
 
-  float conf_thresh_ = 0.25;
-  float nms_thresh_ = 0.6;
+  float confThld_ = 0.25;
+  float nmsThld_ = 0.6;
 
 };
 

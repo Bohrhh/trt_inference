@@ -17,7 +17,7 @@ public:
 
 private:
   int height_, width_;
-  float rectify_alpha_;
+  float rectifyAlpha_;
 
   cv::Mat cameraMatrixL_, distCoeffsL_;
   cv::Mat cameraMatrixR_, distCoeffsR_;

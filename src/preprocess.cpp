@@ -2,13 +2,13 @@
 
 
 Preprocess::Preprocess(const YAML::Node& cfg){
-  image_mode_    = cfg["image_mode"].as<int>();
-  resize_mode_   = cfg["resize_mode"].as<int>();
-  height_        = cfg["height"].as<int>();
-  width_         = cfg["width"].as<int>();
-  norm_          = static_cast<bool>(cfg["norm"].as<int>());
-  padding_mode_  = cfg["padding_mode"].as<int>();
-  padding_value_ = cfg["padding_value"].as<uchar>();
+  imageMode_    = cfg["imageMode"].as<int>();
+  resizeMode_   = cfg["resizeMode"].as<int>();
+  height_       = cfg["height"].as<int>();
+  width_        = cfg["width"].as<int>();
+  norm_         = static_cast<bool>(cfg["norm"].as<int>());
+  paddingMode_  = cfg["paddingMode"].as<int>();
+  paddingValue_ = cfg["paddingValue"].as<uchar>();
   assert(cfg["mean"].IsSequence());
   for (std::size_t i=0; i<cfg["mean"].size(); ++i) {
     mean_[i] = cfg["mean"][i].as<float>();
@@ -20,20 +20,20 @@ Preprocess::Preprocess(const YAML::Node& cfg){
 }
 
 
-void Preprocess::make_preprocess(const cv::Mat& _src, cv::Mat& _dst) {
+void Preprocess::makePreprocess(const cv::Mat& _src, cv::Mat& _dst) {
   cv::Mat src;
 
   // convert image mode
-  if(static_cast<imgPre::ImageMode>(image_mode_) == imgPre::ImageMode::RGB)
+  if(static_cast<imgPre::ImageMode>(imageMode_) == imgPre::ImageMode::RGB)
     cv::cvtColor(_src, src, cv::COLOR_BGR2RGB);
-  else if(static_cast<imgPre::ImageMode>(image_mode_) == imgPre::ImageMode::GRAY)
+  else if(static_cast<imgPre::ImageMode>(imageMode_) == imgPre::ImageMode::GRAY)
     cv::cvtColor(_src, src, cv::COLOR_BGR2GRAY);
   else 
     src = _src;
 
   // resize
-  resize(src, _dst, height_, width_, static_cast<imgPre::ResizeMode>(resize_mode_), 
-         static_cast<imgPre::PaddingMode>(padding_mode_), padding_value_);
+  resize(src, _dst, height_, width_, static_cast<imgPre::ResizeMode>(resizeMode_), 
+         static_cast<imgPre::PaddingMode>(paddingMode_), paddingValue_);
 
   // normalize
   normalize(_dst, _dst, mean_, std_, norm_);
@@ -42,14 +42,14 @@ void Preprocess::make_preprocess(const cv::Mat& _src, cv::Mat& _dst) {
 
 void Preprocess::resize(const cv::Mat& _src, cv::Mat& _dst, 
                         const int height, const int width, 
-                        imgPre::ResizeMode resize_mode, imgPre::PaddingMode padding_mode, uchar padding_value){
+                        imgPre::ResizeMode resizeMode, imgPre::PaddingMode paddingMode, uchar paddingValue){
   cv::Mat src = _src;
   int sheight = src.rows;
   int swidth = src.cols;
   int theight = height;
   int twidth = width;
   
-  if(padding_mode!=imgPre::PaddingMode::NoPadding){
+  if(paddingMode!=imgPre::PaddingMode::NoPadding){
     if(float(width)/float(swidth)<float(height)/float(sheight)){
       theight = int(float(width)/float(swidth)*sheight);      
     }else{
@@ -58,22 +58,22 @@ void Preprocess::resize(const cv::Mat& _src, cv::Mat& _dst,
   }
 
   cv::Mat dst;
-  if(resize_mode == imgPre::ResizeMode::Nearest)
+  if(resizeMode == imgPre::ResizeMode::Nearest)
     cv::resize(src, dst, cv::Size(twidth, theight), 0.0, 0.0, cv::INTER_NEAREST);
-  else if (resize_mode == imgPre::ResizeMode::Bilinear)
+  else if (resizeMode == imgPre::ResizeMode::Bilinear)
     cv::resize(src, dst, cv::Size(twidth, theight), 0.0, 0.0, cv::INTER_LINEAR);
 
   assert (src.type()==CV_8UC3 || src.type()==CV_8UC1);
   if(src.type()==CV_8UC3)
-    _dst = cv::Mat(height, width, src.type(), cv::Scalar(padding_value, padding_value, padding_value));
+    _dst = cv::Mat(height, width, src.type(), cv::Scalar(paddingValue, paddingValue, paddingValue));
   else if(src.type()==CV_8UC1)
-    _dst = cv::Mat(height, width, src.type(), cv::Scalar(padding_value));
+    _dst = cv::Mat(height, width, src.type(), cv::Scalar(paddingValue));
 
-  if(padding_mode==imgPre::PaddingMode::LetterBox){
+  if(paddingMode==imgPre::PaddingMode::LetterBox){
     int y = (height-theight)/2;
     int x = (width-twidth)/2;
     dst.copyTo(_dst(cv::Range(y, y+theight), cv::Range(x, x+twidth)));
-  }else if(padding_mode==imgPre::PaddingMode::LeftTop){
+  }else if(paddingMode==imgPre::PaddingMode::LeftTop){
     dst.copyTo(_dst(cv::Range(0, theight), cv::Range(0, twidth)));
   }else {
     _dst = dst;

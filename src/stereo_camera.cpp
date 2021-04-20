@@ -6,9 +6,9 @@ using std::to_string;
 
 StereoCamera::StereoCamera(const YAML::Node& cfg)
 { 
-  height_ = cfg["video_paras"]["height"].as<int>();
-  width_  = cfg["video_paras"]["width"].as<int>();
-  rectify_alpha_  = cfg["remap_paras"]["rectify_alpha"].as<float>();
+  height_ = cfg["videoParas"]["height"].as<int>();
+  width_  = cfg["videoParas"]["width"].as<int>();
+  rectifyAlpha_  = cfg["remapParas"]["rectifyAlpha"].as<float>();
 
   // video 
   video_ = cfg["video"].as<std::string>();
@@ -25,7 +25,7 @@ StereoCamera::StereoCamera(const YAML::Node& cfg)
   if(to_string(id) == video_){
     cap_.set(cv::CAP_PROP_FRAME_HEIGHT, height_);
     cap_.set(cv::CAP_PROP_FRAME_WIDTH, width_);
-    const char* fourcc = cfg["video_paras"]["fourcc"].as<std::string>().c_str();
+    const char* fourcc = cfg["videoParas"]["fourcc"].as<std::string>().c_str();
     cap_.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc(fourcc[0], fourcc[1], fourcc[2], fourcc[3]));
   }
   else{
@@ -36,17 +36,17 @@ StereoCamera::StereoCamera(const YAML::Node& cfg)
   // remap or not
   remap_ = static_cast<bool>(cfg["remap"].as<int>());
   if(remap_){
-    std::string calib_file = cfg["remap_paras"]["calib_file"].as<std::string>();
-    load(calib_file);
+    std::string calibFile = cfg["remapParas"]["calibFile"].as<std::string>();
+    load(calibFile);
   }
 
   // save video or not
   save_ = static_cast<bool>(cfg["save"].as<int>());
   if (save_){
-    std::string name  = cfg["save_paras"]["name"].as<std::string>();
-    int height  = cfg["save_paras"]["height"].as<int>();
-    int width   = cfg["save_paras"]["width"].as<int>();
-    double freq = cfg["save_paras"]["freq"].as<double>();
+    std::string name  = cfg["saveParas"]["name"].as<std::string>();
+    int height  = cfg["saveParas"]["height"].as<int>();
+    int width   = cfg["saveParas"]["width"].as<int>();
+    double freq = cfg["saveParas"]["freq"].as<double>();
     wri_.open(
       name,
       cv::VideoWriter::fourcc('m', 'p', '4', 'v'),
@@ -72,7 +72,7 @@ void StereoCamera::load(const std::string& filename)
   // stereo rectify
   cv::stereoRectify(
     cameraMatrixL_, distCoeffsL_, cameraMatrixR_, distCoeffsR_,
-    sz, R_, T_, R1_, R2_, P1_, P2_, Q_, cv::CALIB_ZERO_DISPARITY, rectify_alpha_);
+    sz, R_, T_, R1_, R2_, P1_, P2_, Q_, cv::CALIB_ZERO_DISPARITY, rectifyAlpha_);
 
   cv::initUndistortRectifyMap(
     cameraMatrixL_, distCoeffsL_, R1_, P1_,

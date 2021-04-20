@@ -23,7 +23,7 @@ float iou(float lbox[4], float rbox[4]) {
     return interBoxS / (lbox[2] * lbox[3] + rbox[2] * rbox[3] - interBoxS);
 }
 
-void nms(std::vector<Yolo::Detection>& res, float *output, float nms_thresh = 0.6) {
+void nms(std::vector<Yolo::Detection>& res, float *output, float nmsThld = 0.6) {
     int det_size = sizeof(Yolo::Detection) / sizeof(float);
     std::map<float, std::vector<Yolo::Detection>> m;
     for (int i = 0; i < output[0]; i++) {
@@ -40,7 +40,7 @@ void nms(std::vector<Yolo::Detection>& res, float *output, float nms_thresh = 0.
             auto& item = dets[m];
             res.push_back(item);
             for (size_t n = m + 1; n < dets.size(); ++n) {
-                if (iou(item.bbox, dets[n].bbox) > nms_thresh) {
+                if (iou(item.bbox, dets[n].bbox) > nmsThld) {
                     dets.erase(dets.begin() + n);
                     --n;
                 }
@@ -84,7 +84,7 @@ void YOLOV5::vis(
   cv::Mat out16 = outputs["output16"];   // 1,3,40,40,85
   cv::Mat out32 = outputs["output32"];   // 1,3,20,20,85
 
-  imgPre::PaddingMode pm = static_cast<imgPre::PaddingMode>(cfg_preprocess["padding_mode"].as<int>());
+  imgPre::PaddingMode pm = static_cast<imgPre::PaddingMode>(cfg_preprocess["paddingMode"].as<int>());
   if (pm!=imgPre::PaddingMode::LetterBox) {
     throw std::runtime_error("Yolov5 model's padding mode should be LetterBox!");
   }
@@ -95,15 +95,15 @@ void YOLOV5::vis(
   float num_det = 0;
 
   float* start = output+1;
-  num_det = inference_output(out8, start, conf_thresh_, 3, 80, 80, 80, 8, 0);
+  num_det = inference_output(out8, start, confThld_, 3, 80, 80, 80, 8, 0);
   *output = *output + num_det;
-  num_det = inference_output(out16, start, conf_thresh_, 3, 40, 40, 80, 16, 1);
+  num_det = inference_output(out16, start, confThld_, 3, 40, 40, 80, 16, 1);
   *output = *output + num_det;
-  num_det = inference_output(out32, start, conf_thresh_, 3, 20, 20, 80, 32, 2);
+  num_det = inference_output(out32, start, confThld_, 3, 20, 20, 80, 32, 2);
   *output = *output + num_det;
 
   std::vector<Yolo::Detection> res;
-  nms(res, output, nms_thresh_);
+  nms(res, output, nmsThld_);
   
   for (size_t j = 0; j < res.size(); j++) {
       cv::Rect r = get_rect(img, res[j].bbox, cfg_preprocess["height"].as<int>(), cfg_preprocess["width"].as<int>());
@@ -116,7 +116,7 @@ void YOLOV5::vis(
 
 }
 
-float YOLOV5::inference_output(cv::Mat& x, float* &start, float conf_thresh, int anchors, int h, int w, int classes, float stride, int det){
+float YOLOV5::inference_output(cv::Mat& x, float* &start, float confThld, int anchors, int h, int w, int classes, float stride, int det){
   // float* data = (float*) x.data;
   // for (int i=0; i<anchors*h*w*(classes+5); ++i){
   //   *data = 1.0f/(1.0f+expf(*data));
@@ -129,7 +129,7 @@ float YOLOV5::inference_output(cv::Mat& x, float* &start, float conf_thresh, int
       for (int k=0; k<w; ++k){
         int ijk = xstrides[1]*i+xstrides[2]*j+xstrides[3]*k;
         float box_score = data[ijk+4];
-        if (box_score<conf_thresh) continue;
+        if (box_score<confThld) continue;
         float max_class_probs = -1;
         float class_id = 0;
         for (int l=5; l<classes+5; ++l){
@@ -138,7 +138,7 @@ float YOLOV5::inference_output(cv::Mat& x, float* &start, float conf_thresh, int
             class_id = l-5;
           }
         }
-        if (max_class_probs*box_score<conf_thresh) continue;
+        if (max_class_probs*box_score<confThld) continue;
 
         num_det += 1;
         *start = (data[ijk]*2.0-0.5+k)*stride;
