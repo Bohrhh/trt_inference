@@ -15,13 +15,13 @@ void FeatureExtraction::vis(
   cv::Mat descriptors = outputs["descriptors"];
   int height          = img.rows;
   int width           = img.cols;
-  cv::Scalar color(255,0,0);
+  cv::Scalar color(0,255,0);
 
   for(int i=0; i<1024; ++i){
-    if(scores.at<float>(0,i) < 1e-5)
+    if(scores.at<float>(0,i) < scoreThld_)
       break;
     int x = keypoints.at<float>(0,i,0)*width;
     int y = keypoints.at<float>(0,i,1)*height;
-    cv::circle(img, cv::Point(x, y), 1, color, -1, 16);
+    cv::circle(img, cv::Point(x, y), 2, color, -1, 16);
   }
 }

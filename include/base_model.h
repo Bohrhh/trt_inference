@@ -26,12 +26,30 @@ public:
   bool isOpened() const { return engine_.get(); }
   void release() { engine_ = nullptr; }
   
+
+/**
+ * @brief check inputs' dims. if changed, update buffer_
+ * @param[in] inputs : model inputs, the size of each input Mat should be (n,c,h,w)
+ */
   void checkInputsDims(
     std::unordered_map<std::string, cv::Mat>& inputs);
+
+/**
+ * @brief run inference
+ * @param[in]  inputs  : model inputs, the size of each input Mat should be (n,c,h,w)
+ * @param[out] outputs : model outputs
+ */
   bool run(
     std::unordered_map<std::string, cv::Mat>& inputs, 
     std::unordered_map<std::string, cv::Mat>& outputs);
 
+/**
+ * @brief visualize the outputs to img
+ * @param[in]  img           : color image 
+ * @param[in]  outputs       : model inference outputs
+ * @param[in]  cfg_preprocess: preprocess config which used to prepare model inputs
+ * @param[out] img           : vis img
+ */
   virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfg_preprocess) = 0;
 
   std::unordered_map<std::string, nvinfer1::Dims> inOutDims_;

@@ -17,11 +17,18 @@ class Preprocess
 {
 public:
   Preprocess(const YAML::Node& cfg);
+
+/**
+ * @brief main workflow, do image preprocess
+ * @param[in]  src
+ * @param[out] dst
+ */
   void make_preprocess(const cv::Mat& src, cv::Mat& dst);
+
   void resize(const cv::Mat& src, cv::Mat& dst, const int height, const int width, 
               imgPre::ResizeMode resize_mode, imgPre::PaddingMode padding, uchar padding_value=0);
+              
   void normalize(const cv::Mat& src, cv::Mat& dst, const float mean[], const float std[], bool norm=true); 
-  void transpose(const cv::Mat& src, cv::Mat& dst);
 
 private:
   int image_mode_;

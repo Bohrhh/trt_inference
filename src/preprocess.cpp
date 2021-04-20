@@ -93,6 +93,7 @@ void Preprocess::normalize(const cv::Mat& _src, cv::Mat& _dst,
     std::cerr << "Invalid input channels" << std::endl;
     exit(1);
   }
+  // normalize output shape will be (n,c,h,w)
   int size[4] = {1,channels,height,width};
   _dst.create(4, size, CV_32F);
   float* data = (float *)_dst.data;

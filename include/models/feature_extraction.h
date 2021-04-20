@@ -15,9 +15,14 @@ class FeatureExtraction: public BaseModel
 {
 public:
   FeatureExtraction() {}
-  FeatureExtraction(const YAML::Node& cfg):BaseModel(cfg){}
+  FeatureExtraction(const YAML::Node& cfg):BaseModel(cfg){
+    scoreThld_ = cfg["vis"]["scoreThld"].as<float>();
+  }
 
   virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfg_preprocess);
+
+private:
+  float scoreThld_=0.01;
 
 };
 

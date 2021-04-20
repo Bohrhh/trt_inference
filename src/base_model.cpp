@@ -171,6 +171,10 @@ void BaseModel::checkInputsDims(std::unordered_map<std::string, cv::Mat>& inputs
     int id = engine_->getBindingIndex(n.c_str());
     context_->setBindingDimensions(id, inOutDims_[n]);
   }
+  for(std::string n : outputTensorNames_){
+    int id = engine_->getBindingIndex(n.c_str());
+    inOutDims_[n] = context_->getBindingDimensions(id);
+  }
 
   delete buffers_;
   buffers_ = new samplesCommon::BufferManager(engine_, 0, context_);
