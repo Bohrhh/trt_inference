@@ -19,7 +19,7 @@ public:
     scoreThld_ = cfg["vis"]["scoreThld"].as<float>();
   }
 
-  virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfg_preprocess);
+  virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfgPreprocess, cv::Mat& visImg);
 
 private:
   float scoreThld_=0.01;

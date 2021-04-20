@@ -78,7 +78,8 @@ cv::Rect get_rect(cv::Mat& img, float bbox[4], int input_h, int input_w) {
 void YOLOV5::vis(
   cv::Mat& img,
   std::unordered_map<std::string, cv::Mat>& outputs,
-  const YAML::Node& cfg_preprocess)
+  const YAML::Node& cfg_preprocess,
+  cv::Mat& visImg)
 {
   cv::Mat out8  = outputs["output8"];    // 1,3,80,80,85
   cv::Mat out16 = outputs["output16"];   // 1,3,40,40,85
@@ -88,6 +89,8 @@ void YOLOV5::vis(
   if (pm!=imgPre::PaddingMode::LetterBox) {
     throw std::runtime_error("Yolov5 model's padding mode should be LetterBox!");
   }
+
+  visImg = img.clone();
 
   size_t data_len = (20*20*3+40*40*3+80*80*3)*6;
   float* output = new float[data_len+1]; // (n, 6)
@@ -106,9 +109,9 @@ void YOLOV5::vis(
   nms(res, output, nmsThld_);
   
   for (size_t j = 0; j < res.size(); j++) {
-      cv::Rect r = get_rect(img, res[j].bbox, cfg_preprocess["height"].as<int>(), cfg_preprocess["width"].as<int>());
-      cv::rectangle(img, r, cv::Scalar(0x27, 0xC1, 0x36), 2);
-      cv::putText(img, std::to_string((int)res[j].class_id), cv::Point(r.x, r.y - 1), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0xFF, 0xFF, 0xFF), 2);
+      cv::Rect r = get_rect(visImg, res[j].bbox, cfg_preprocess["height"].as<int>(), cfg_preprocess["width"].as<int>());
+      cv::rectangle(visImg, r, cv::Scalar(0x27, 0xC1, 0x36), 2);
+      cv::putText(visImg, std::to_string((int)res[j].class_id), cv::Point(r.x, r.y - 1), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0xFF, 0xFF, 0xFF), 2);
   }
 
 

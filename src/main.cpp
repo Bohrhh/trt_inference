@@ -46,7 +46,7 @@ int main(int argc, char **argv)
   Preprocess pre(cfg["preprocess"]);
   std::shared_ptr<BaseModel> pmodel;
 
-  bool save_video = static_cast<bool>(cfg["stereoCamera"]["save"].as<int>());
+  bool saveVideo = static_cast<bool>(cfg["stereoCamera"]["save"].as<int>());
   std::string model_type = cfg["model"]["type"].as<std::string>();
   if(model_type=="stereo")
     pmodel = std::shared_ptr<BaseModel>(new StereoDepth(cfg["model"]));
@@ -69,6 +69,7 @@ int main(int argc, char **argv)
     cv::Mat imgR;
     cv::Mat x1;
     cv::Mat x2;
+    cv::Mat visImg;
     std::unordered_map<std::string, cv::Mat> inputs;
     std::unordered_map<std::string, cv::Mat> outputs;
 
@@ -93,13 +94,13 @@ int main(int argc, char **argv)
       std::cerr << "Model run failed!" << std::endl;
       return -1;
     }
-    pmodel->vis(imgL, outputs, cfg["preprocess"]);
+    pmodel->vis(imgL, outputs, cfg["preprocess"], visImg);
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> diff = end-start;
     std::cout << "one prediction time cost : " << diff.count()*1000 << " ms\n";
-    cv::imshow("vis", imgL);
-    if (save_video)
-      camera.write(imgL);
+    cv::imshow("vis", visImg);
+    if (saveVideo)
+      camera.write(visImg);
 
     int key = cv::waitKey(1);
     if(key == 'q' || key == 27 /* ESC */)

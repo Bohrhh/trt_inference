@@ -3,7 +3,8 @@
 void StereoDepth::vis(
   cv::Mat& img,
   std::unordered_map<std::string, cv::Mat>& outputs,
-  const YAML::Node& cfg_preprocess)
+  const YAML::Node& cfg_preprocess,
+  cv::Mat& visImg)
 {
   imgPre::PaddingMode pm = static_cast<imgPre::PaddingMode>(cfg_preprocess["paddingMode"].as<int>());
   if (pm!=imgPre::PaddingMode::NoPadding) {
@@ -11,10 +12,9 @@ void StereoDepth::vis(
   }
 
   cv::Mat disp = outputs["disp"];
-  cv::Mat disp_vis;
   int height = inOutDims_["disp"].d[2];
   int width  = inOutDims_["disp"].d[3];
-  disp_vis.create(height, width, CV_8UC3);
+  visImg.create(height, width, CV_8UC3);
 
   float sum = 0;
   for (int32_t i=0; i<8; i++)
@@ -49,12 +49,12 @@ void StereoDepth::vis(
       uint8_t b = (uint8_t)((w*colorMap_[i][2]+(1.0-w)*colorMap_[i+1][2]) * 255.0);
       
       // set pixel
-      disp_vis.at<cv::Vec3b>(v,u) = cv::Vec3b(b,g,r);
+      visImg.at<cv::Vec3b>(v,u) = cv::Vec3b(b,g,r);
     }
   }
 
   if( height!=img.rows || width!=img.cols)
-    cv::resize(disp_vis, disp_vis, img.size());
+    cv::resize(visImg, visImg, img.size());
   
-  cv::vconcat(img, disp_vis, img);
+  cv::vconcat(img, visImg, visImg);
 }

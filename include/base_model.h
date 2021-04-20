@@ -47,10 +47,10 @@ public:
  * @brief visualize the outputs to img
  * @param[in]  img           : color image 
  * @param[in]  outputs       : model inference outputs
- * @param[in]  cfg_preprocess: preprocess config which used to prepare model inputs
- * @param[out] img           : vis img
+ * @param[in]  cfgPreprocess : preprocess config which used to prepare model inputs
+ * @param[out] visImg        : vis img
  */
-  virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfg_preprocess) = 0;
+  virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfgPreprocess, cv::Mat& visImg) = 0;
 
   std::unordered_map<std::string, nvinfer1::Dims> inOutDims_;
   std::unordered_map<std::string, nvinfer1::DataType> outputDataType_;

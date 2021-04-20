@@ -3,13 +3,15 @@
 void InstanceSeg::vis(
   cv::Mat& img, 
   std::unordered_map<std::string, cv::Mat>& outputs,
-  const YAML::Node& cfg_preprocess)
+  const YAML::Node& cfg_preprocess,
+  cv::Mat& visImg)
 {
   imgPre::PaddingMode pm = static_cast<imgPre::PaddingMode>(cfg_preprocess["paddingMode"].as<int>());
   if (pm!=imgPre::PaddingMode::NoPadding) {
     throw std::runtime_error("InstanceSeg model's padding mode should be NoPadding!");
   }
 
+  visImg = img.clone();
   cv::Mat num_detections = outputs["num_detections"];
   cv::Mat nmsed_classes  = outputs["nmsed_classes"];
   cv::Mat nmsed_boxes    = outputs["nmsed_boxes"];
@@ -19,8 +21,8 @@ void InstanceSeg::vis(
   const int num = int(num_detections.at<float>(0));
   const int maskH = inOutDims_["mask_probs"].d[2];
   const int maskW = inOutDims_["mask_probs"].d[3];
-  const int imageH = img.rows;
-  const int imageW = img.cols;
+  const int imageH = visImg.rows;
+  const int imageW = visImg.cols;
 
   for (int i=num-1; i>=0; i--){
     const float x1 = nmsed_boxes.at<float>(0,i,0)*imageW;
@@ -41,14 +43,14 @@ void InstanceSeg::vis(
         const float xSample = std::max(std::min(xDelta * (x+0.5f-x1), maskW - 0.5f)-0.5f, 0.0f);
         float mask_pixel = interpolateBilinear(src, maskH, maskW, ySample, xSample);
         if (mask_pixel > 0.6){
-            float p_r = static_cast<float>(img.at<cv::Vec3b>(y, x)[0]);
-            float p_g = static_cast<float>(img.at<cv::Vec3b>(y, x)[1]);
-            float p_b = static_cast<float>(img.at<cv::Vec3b>(y, x)[2]);
-            img.at<cv::Vec3b>(y, x)[0]
+            float p_r = static_cast<float>(visImg.at<cv::Vec3b>(y, x)[0]);
+            float p_g = static_cast<float>(visImg.at<cv::Vec3b>(y, x)[1]);
+            float p_b = static_cast<float>(visImg.at<cv::Vec3b>(y, x)[2]);
+            visImg.at<cv::Vec3b>(y, x)[0]
                 = static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, p_r * (1 - alpha) + colors_[class_type%num_colors_][0] * alpha)));
-            img.at<cv::Vec3b>(y, x)[1]
+            visImg.at<cv::Vec3b>(y, x)[1]
                 = static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, p_g * (1 - alpha) + colors_[class_type%num_colors_][1] * alpha)));
-            img.at<cv::Vec3b>(y, x)[2]
+            visImg.at<cv::Vec3b>(y, x)[2]
                 = static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, p_b * (1 - alpha) + colors_[class_type%num_colors_][2] * alpha)));
         }
       }

@@ -17,7 +17,7 @@ public:
   InstanceSeg() {}
   InstanceSeg(const YAML::Node& cfg):BaseModel(cfg){}
 
-  virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfg_preprocess);
+  virtual void vis(cv::Mat& img, std::unordered_map<std::string, cv::Mat>& outputs, const YAML::Node& cfgPreprocess, cv::Mat& visImg);
   float interpolateBilinear(const float* src, int srcH, int srcW, float y, float x);
 
 private:
