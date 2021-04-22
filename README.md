@@ -42,6 +42,6 @@ cmake ..
 make
 
 cd ..
-build/inference --config-file=configs/fastFeat.yaml
+build/inference configs/fastFeat.yaml
 # settings of camera and model are in yaml file
 ```

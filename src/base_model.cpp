@@ -149,7 +149,11 @@ void BaseModel::checkInputsDims(std::unordered_map<std::string, cv::Mat>& inputs
     cv::Mat x = inputs[n];
     cv::MatSize currentInputSize = x.size;
     nvinfer1::Dims oldInputDims = inOutDims_[n];
-    int nbDims = oldInputDims.nbDims;
+    int nbDims = currentInputSize.dims();
+    if (nbDims!=4){
+      std::cerr << "Input shape should be (n,c,h,w)" << std::endl; 
+      exit(1);
+    }
     for(int i=0; i<nbDims; i++){
       if(oldInputDims.d[i]!=currentInputSize[i]){
         changed = true;
