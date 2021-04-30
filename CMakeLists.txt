@@ -19,7 +19,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
 find_package(OpenCV REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(yaml-cpp REQUIRED)
-find_package(gflags REQUIRED)
 
 find_path(CUDA_INCLUDE_DIR cuda_runtime.h
   HINTS ${CUDA_TOOLKIT_ROOT_DIR}
@@ -60,7 +59,7 @@ set(TENSORRT_LIBRARY ${TENSORRT_LIBRARY_INFER}
 # include 
 include_directories(${OpenCV_INCLUDE_DIRS}
   ${CUDA_INCLUDE_DIR} ${TENSORRT_INCLUDE_DIR} 
-  ${YAML_CPP_INCLUDE_DIR} ${GFLAGS_INCLUDE_DIR} 
+  ${YAML_CPP_INCLUDE_DIR}
   ${PROJECT_SOURCE_DIR}/common
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_SOURCE_DIR}/include/models)
@@ -83,7 +82,7 @@ add_executable(
 )
 
 target_link_libraries(inference ${OpenCV_LIBS}
-  ${CUDA_LIBRARIES} ${TENSORRT_LIBRARY} yaml-cpp gflags )
+  ${CUDA_LIBRARIES} ${TENSORRT_LIBRARY} yaml-cpp )
 
 
 add_executable(
@@ -94,4 +93,4 @@ add_executable(
 )
 
 target_link_libraries(test_preprocess ${OpenCV_LIBS}
-  ${CUDA_LIBRARIES} ${TENSORRT_LIBRARY} yaml-cpp gflags )
+  ${CUDA_LIBRARIES} ${TENSORRT_LIBRARY} yaml-cpp )
