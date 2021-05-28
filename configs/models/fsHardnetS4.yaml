@@ -1,0 +1,83 @@
+# =======================================
+# stereoCamera
+# Args:
+#   video          -- the id for camera device or name for video path.
+#                     if it is an id, videoParas should be provided
+#   videoParas
+#     height       -- video height
+#     width        -- video width
+#     fourcc       -- MJPG 
+#   remap          -- 0 for false, 1 for true. if 1, remapParas should be provided
+#   remapParas
+#     rectifyAlpha -- 0.0 means no black areas after rectification, 
+#                     1.0 means no source image pixels are lost
+#     calibFile    -- calibration file of stereo camera
+#   save           -- whether to save video, if 1, saveParas should be provided
+#   saveParas
+#     name         -- video name
+#     height       -- video height
+#     width        -- video width
+#     freq         -- video frequency 
+# =======================================
+stereoCamera:
+  video: data/outdoor_original.avi
+  videoParas:
+    height: 320
+    width: 1024
+    fourcc: MJPG
+  remap: 1
+  remapParas:
+    rectifyAlpha: 0.0
+    calibFile: configs/camera/stereo-1.yml
+  save: 1
+  saveParas:
+    name: test.mp4
+    height: 960
+    width: 640
+    freq: 30.0
+
+
+# =======================================
+# image preprocess
+# Args:
+#   imageMode    -- 0 for RGB, 1 for BGR, 2 for Gray
+#   resizeMode   -- 0 for Nearest, 1 for Bilinear
+#   height       -- output image height
+#   width        -- output image width
+#   paddingMode  -- whether scale up or scale down the height and width with the same ratio.
+#                   0 for no padding, 1 for left top, 2 for letterbox.
+#                   padding will be done before norm.
+#   paddingValue -- the value to padding if padding mode is not 0
+#   norm         -- whether divide by 255 before normlization. 0 for false, 1 for true
+#   mean         -- means of pixels values
+#   std          -- stds of pixels values
+# =======================================
+preprocess:
+  imageMode: 0
+  resizeMode: 1
+  height: 320
+  width: 512
+  paddingMode: 0
+  paddingValue: 128
+  norm: 1
+  mean: [0.485, 0.456, 0.406]
+  std:  [0.229, 0.224, 0.225]
+
+
+# =======================================
+# model
+# Args:
+#   type    -- model type which can be selected from stereo, instance_seg, feature_extraction
+#   path    -- tensorrt model path
+#   inputs  -- model's inputs
+#   outputs -- model's outputs
+#   vis:
+#     maxDisp -- max disparity for imshow, unit pixel
+# =======================================
+model:
+  type: stereo
+  path: data/fsHardnetS4.trt
+  inputs:  [imgl, imgr]
+  outputs: [disp]
+  vis:
+    maxDisp: 40
